@@ -3,11 +3,11 @@ import matplotlib as mpl
 import numpy as np
 import pandas as pd
 import seaborn as sns
-from difflib improt SequenceMatcher
+from difflib import SequenceMatcher
 pd.options.mode.chained_assignment = None  # default='warn'
 
 ## Function: Find columns in a df that contain a specific keyword.
-def filter_df(df, kwards, columns, prob = False, threshold=0.5):
+def filter_df(df, kwards, columns, prob = True, threshold=0.5):
     """
     Returns a filtered df.
     Parameters:
