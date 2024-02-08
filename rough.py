@@ -3,9 +3,45 @@ import matplotlib as mpl
 import numpy as np
 import pandas as pd
 import seaborn as sns
+from difflib improt SequenceMatcher
+pd.options.mode.chained_assignment = None  # default='warn'
 
 ## Function: Find columns in a df that contain a specific keyword.
-def find(keyword, df):
+def filter_df(df, kwards, columns, prob = False, threshold=0.5):
+    """
+    Returns a filtered df.
+    Parameters:
+        kwards = A string or a list of strings to look for in a column
+        columns = (str) A column name or a list of column names that we look for.
+        prob = (boolean) True if you want to look for similarity (default probability threshold = 0.5)
+    """
+    og_df = df
+    if type(kwards) == list:
+        for k,col in zip(kwards,columns):
+            if prob == False: # Find exact matches
+                df = df[df[col] == k]
+
+            else: # Find similar matches
+                k = k.lower()
+                df = df[df[col].notna()]
+                df[col] = df[col].apply(lambda x : x.lower())
+                df[col] = df[col].apply(lambda x : True if check_similarity(x,k) > threshold else False)
+                df = df[df[col] == True]
+        return og_df.loc[df.index.tolist(), :]
+
+    else:
+        if prob == True:
+            k = kwards.lower()
+            df = df[df[columns].notna()]
+            df[columns] = df[columns].apply(lambda x : True if check_similarity(x.lower(), k) > threshold else False)
+            df = df[df[columns] == True]
+            return og_df.loc[df[columns].index.tolist(), : ]
+        else:
+            return df[df[columns] == kwards]
+
+
+
+def find_in_columns(keyword, df):
     """
     Returns a list of column names in the dataframe that contain the keyword specified.
 
@@ -19,6 +55,20 @@ def find(keyword, df):
             l.append(column)
     return l
 
+def find_in_list(keyword,list_):
+    """
+    Returns a list of items that match a particular keyword in a given list.
+
+    Parameters:
+        Keyword = A string type value
+        list_ = A list containing string values
+    """
+    l = []
+    for i in list_:
+        if keyword.lower() in i.lower():
+            l.append(i)
+    return l
+
 ## Function: Fixes MRNs or Hospital Numbers to 7 digit str format numbers
 def fix_id(x):
     """
@@ -30,32 +80,12 @@ def fix_id(x):
     """
     return str((7-len(str(int(x))))*'0' + str(x))
 
-# def plot_horizontal_bar(df, categorical_column, ax = None, color='blue', xlabel='Counts', save=False):
-#     """
-#     Uses df['cateogrical_column'].value_counts().
-#     Plots a horizontal barplot with matplotlib.
-#
-#     Parameters:
-#         df = Pandas DataFrame
-#         categorical_column = Str type; column name
-#         ax = matplotlib axis
-#         xlabel = Str type; x-axis label
-#         save = Saves the figure if (=True)
-#     """
-#     if ax is None:
-#         ax = plt.gca()
-#     vc = df[categorical_column].value_counts()
-#     ax.barh(vc.keys(), vc.values, color=color)
-#     ax.set_xlabel(xlabel)
-#     ax.set_ylabel(categorical_column)
-#
-#     # Setting up the figure
-#     fig = plt.gcf()
-#     # Saving the figure
-#     if save is True:
-#         fig.savefig(f"{categorical_column}.jpg") # Saves in JPG format
-#
-#     ## Use plt.show() after this Function
+def check_similarity(a,b):
+    """
+    Checks the similarity between two strings
+    Output: percentage ratio proportional to similarity between two strings
+    """
+    return round(SequenceMatcher(None, a, b).ratio(),2)
 
 
 class Plotter:
