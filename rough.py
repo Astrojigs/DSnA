@@ -4,6 +4,11 @@ import numpy as np
 import pandas as pd
 import seaborn as sns
 from difflib import SequenceMatcher
+import geopandas as gpd
+'''
+
+NOTE: UTILITIES FOLDER MUST BE IN THE SAME DIRECTORY AS UTILS.PY
+'''
 pd.options.mode.chained_assignment = None  # default='warn'
 
 ## Function: Find columns in a df that contain a specific keyword.
@@ -98,6 +103,21 @@ class Plotter:
 
     def __init__(self,**kwargs):
         self.df = kwargs.get('df')
+
+    def plot_pie(self):
+        pass
+
+
+
+    def plot_county_data_overlay(self, ax):
+        """
+        Plots given data on map.
+
+        Parameters:
+            shp_file = A shape file (e.g. counties.shp)
+        """
+        county_df = gpd.read_file('./Utilities/counties.shp')
+
 
     def plot_horizontal_bar(self, categorical_column, **kwargs):
         """
