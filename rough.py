@@ -109,14 +109,72 @@ class Plotter:
 
 
 
-    def plot_county_data_overlay(self, ax):
+    def plot_county_data_overlay(self, df, ax = plt.gca(), county_column, column, operation):
         """
         Plots given data on map.
 
+        NOTE: the county column in the dataframe should be with similar syntax as below:
+            ['Monaghan',
+             'Laois',
+             'Roscommon',
+             'Leitrim',
+             'Dublin',
+             'Armagh',
+             'Clare',
+             'Cavan',
+             'Kildare',
+             'Galway',
+             'Fermanagh',
+             'Louth',
+             'Donegal',
+             'Mayo',
+             'Sligo',
+             'Cork',
+             'Westmeath',
+             'Longford',
+             'Offaly',
+             'Kerry',
+             'Tyrone',
+             'Meath',
+             'Limerick',
+             'Antrim',
+             'Down',
+             'Tipperary',
+             'Waterford',
+             'Wexford',
+             'Kilkenny',
+             'Carlow',
+             'Wicklow']
+
+
         Parameters:
-            shp_file = A shape file (e.g. counties.shp)
+            df = dataframe
+            ax = axis
+            column = (type : str) The name of the column you'd like to visualize
+                if column contains string type variables
+
+                if column contains numerical variables
+            operation = (type : str)
+                    'sum', 'common' (uses pd.Series.mode), 'count'
         """
         county_df = gpd.read_file('./Utilities/counties.shp')
+
+        # Copying the dataframe just to be sfe.
+        dummy = df
+
+        # Make a column to count the number of entries in the DataFrame.
+        dummy['c'] = [1 for x in range(len(dummy))]
+
+        #group the df w.r.t counties and the desired column
+        if operation == 'common':
+            #
+            dummy = dummy.groupby(county_column, dropna=True).agg({column : pd.Series.mode}).reset_index()
+            dummy[column] = dummy[column].apply(lambda x : x.any() if type(x) != str else x)
+
+        elif operation == 'sum':
+            dummy = dummy.
+
+        elif operation == 'count':
 
 
     def plot_horizontal_bar(self, categorical_column, **kwargs):
