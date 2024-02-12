@@ -5,6 +5,7 @@ import pandas as pd
 import seaborn as sns
 from difflib import SequenceMatcher
 import geopandas as gpd
+import warnings
 '''
 
 NOTE: UTILITIES FOLDER MUST BE IN THE SAME DIRECTORY AS UTILS.PY
@@ -93,12 +94,22 @@ def check_similarity(a,b):
     return round(SequenceMatcher(None, a, b).ratio(),2)
 
 
-class Plotter:
+class Graph:
     """
     Docstring for Plotter.
 
         kwards:
-            df :
+            df : dataframe
+
+        Methods:
+            plot_on_county : (GIS plot)
+
+            plot_horizontal_bar : (bar graph)
+
+            plot_pie : (Pie Chart)
+
+
+
     """
 
     def __init__(self,**kwargs):
@@ -109,42 +120,11 @@ class Plotter:
 
 
 
-    def plot_county_data_overlay(self, df,  county_column, column, operation, ax = plt.gca(), log_scale= False):
+    def plot_on_county(self, df,  county_column, column, operation, ax = plt.gca(), log_scale= False, **kwargs):
         """
         Plots given data on map.
 
-        NOTE: the county column in the dataframe should be with similar syntax as below:
-            ['Monaghan',
-             'Laois',
-             'Roscommon',
-             'Leitrim',
-             'Dublin',
-             'Armagh',
-             'Clare',
-             'Cavan',
-             'Kildare',
-             'Galway',
-             'Fermanagh',
-             'Louth',
-             'Donegal',
-             'Mayo',
-             'Sligo',
-             'Cork',
-             'Westmeath',
-             'Longford',
-             'Offaly',
-             'Kerry',
-             'Tyrone',
-             'Meath',
-             'Limerick',
-             'Antrim',
-             'Down',
-             'Tipperary',
-             'Waterford',
-             'Wexford',
-             'Kilkenny',
-             'Carlow',
-             'Wicklow']
+        NOTE: the county column in the dataframe should be with Capital Letters for merging
 
 
         Parameters:
@@ -156,6 +136,21 @@ class Plotter:
                 if column contains numerical variables
             operation = (type : str)
                     'sum', 'common' (uses pd.Series.mode), 'count'
+
+            **kwargs:
+                title = (str) Set the title of the plot
+                cmap =
+                    Sequential2 :
+                        ['binary', 'gist_yarg', 'gist_gray', 'gray', 'bone',
+                          'pink', 'spring', 'summer', 'autumn', 'winter', 'cool',
+                          'Wistia', 'hot', 'afmhot', 'gist_heat', 'copper']
+                    Diverging :
+                         ['PiYG', 'PRGn', 'BrBG', 'PuOr', 'RdGy', 'RdBu', 'RdYlBu',
+                          'RdYlGn', 'Spectral', 'coolwarm', 'bwr', 'seismic']
+
+                         For more information on colormaps:
+                            https://matplotlib.org/stable/users/explain/colors/colormaps.html
+
         """
         county_df = gpd.read_file('./Utilities/counties.shp')
 
@@ -175,19 +170,51 @@ class Plotter:
                 # Finds average number for each county
                 dummy = round(dummy.groupby(county_column,dropna = True)[column].mean(),2).to_frame().reset_index()
 
-        elif operation == 'sum':
-            print('Not available')
+        elif operation == 'sum' or operation == 'total':
+            dummy = dummy.groupby(county_column, dropna=True)[column].sum().to_frame().reset_index()
 
         elif operation == 'count':
             dummy = dummy.groupby(county_column, dropna=True)['c'].count().to_frame().reset_index()
-
+            dummy[column] = dummy['c']
         # Merge based on county
         dummy['County'] = dummy[county_column]
         m_d = pd.merge(county_df, dummy, on='County')
 
-        
+        # Plotting the data
+        #Boundary plot
+        county_df.boundary.plot(ax=ax, linewidth = 0.5)
 
+        #Data plot
+        title = f'{column} overlayed on Counties' if kwargs.get('title') is None else kwargs.get('title')
+        # annotate county with string values
+        if m_d[column].dtype == 'O':
+            m_d['coords'] = m_d['geometry'].apply(lambda x:x.representative_point().coords[:])
+            m_d['coords'] = [coords[0] for coords in m_d['coords']]
+            for idx, row in m_d.iterrows():
+                ax.text(row.coords[0], row.coords[1], s = row[column],
+                horizontalalignment='center',
+                bbox = {'facecolor' : 'white',
+                'alpha' : 0.9,
+                'pad': 2,
+                'edgecolor':'none'},
+                fontsize = 5)
+            if m_d[column].apply(lambda x : len(x)).mean() > 10:
+                warnings.warn("String values length > 10. Use Acronyms instead.")
 
+        else:
+            if log_scale == False:
+                m_d.plot(ax=ax,column=column, legend=True,
+                 cmap = 'magma' if kwargs.get('cmap') is None else kwargs.get('cmap'))
+            else: # Plot a logarithmic scale
+                m_d['Log'] = m_d[column].apply(lambda x : np.log(x))
+                m_d.plot(ax=ax, column='Log', legend=True,
+                cmap = 'magma' if kwargs.get('cmap') is None else kwargs.get('cmap'))
+                title+= ' (${log_e}$ ${scale})$'
+
+        # Don't plot axis
+        ax.set_axis_off()
+
+        ax.set_title(title)
 
     def plot_horizontal_bar(self, categorical_column, **kwargs):
         """
