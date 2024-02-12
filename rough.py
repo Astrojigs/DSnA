@@ -109,7 +109,7 @@ class Plotter:
 
 
 
-    def plot_county_data_overlay(self, df, ax = plt.gca(), county_column, column, operation):
+    def plot_county_data_overlay(self, df,  county_column, column, operation, ax = plt.gca(), log_scale= False):
         """
         Plots given data on map.
 
@@ -167,14 +167,26 @@ class Plotter:
 
         #group the df w.r.t counties and the desired column
         if operation == 'common':
-            #
-            dummy = dummy.groupby(county_column, dropna=True).agg({column : pd.Series.mode}).reset_index()
-            dummy[column] = dummy[column].apply(lambda x : x.any() if type(x) != str else x)
+            # for string:
+            if dummy[column].dtype == 'O':
+                dummy = dummy.groupby(county_column, dropna=True).agg({column : pd.Series.mode}).reset_index()
+                dummy[column] = dummy[column].apply(lambda x : x.any() if type(x) != str else x)
+            else:
+                # Finds average number for each county
+                dummy = round(dummy.groupby(county_column,dropna = True)[column].mean(),2).to_frame().reset_index()
 
         elif operation == 'sum':
-            dummy = dummy.
+            print('Not available')
 
         elif operation == 'count':
+            dummy = dummy.groupby(county_column, dropna=True)['c'].count().to_frame().reset_index()
+
+        # Merge based on county
+        dummy['County'] = dummy[county_column]
+        m_d = pd.merge(county_df, dummy, on='County')
+
+        
+
 
 
     def plot_horizontal_bar(self, categorical_column, **kwargs):
