@@ -135,7 +135,10 @@ class Graph:
 
                 if column contains numerical variables
             operation = (type : str)
-                    'sum', 'common' (uses pd.Series.mode), 'count'
+                    'sum' : when you want to groupby county and sum a column for each county
+                    'count' : Groupby county and count the rows for each county
+                    'common' : Groupby county and find average (for int or float)
+                                and common names (for str type column)
 
             **kwargs:
                 title = (str) Set the title of the plot
@@ -160,20 +163,30 @@ class Graph:
         # Make a column to count the number of entries in the DataFrame.
         dummy['c'] = [1 for x in range(len(dummy))]
 
+        # Making sure the county column matches on both dfs
+        dummy[county_column] = dummy[county_column].apply(lambda x : x.upper().replace('COUNTY',''))
+
+
+        title = f'{column} across Counties' if kwargs.get('title') is None else kwargs.get('title')
+
         #group the df w.r.t counties and the desired column
         if operation == 'common':
             # for string:
             if dummy[column].dtype == 'O':
+                title = 'Common ' + title
                 dummy = dummy.groupby(county_column, dropna=True).agg({column : pd.Series.mode}).reset_index()
-                dummy[column] = dummy[column].apply(lambda x : x.any() if type(x) != str else x)
+                dummy[column] = dummy[column].apply(lambda x : x.any() if type(x) != str else x) # only accounts for list if not a string
             else:
                 # Finds average number for each county
+                title = 'Average ' + title
                 dummy = round(dummy.groupby(county_column,dropna = True)[column].mean(),2).to_frame().reset_index()
 
         elif operation == 'sum' or operation == 'total':
+            title = 'Total ' + title
             dummy = dummy.groupby(county_column, dropna=True)[column].sum().to_frame().reset_index()
-
+            dummy[column] = dummy[column].fillna(0)
         elif operation == 'count':
+            title = 'Count of ' + title
             dummy = dummy.groupby(county_column, dropna=True)['c'].count().to_frame().reset_index()
             dummy[column] = dummy['c']
         # Merge based on county
@@ -185,9 +198,10 @@ class Graph:
         county_df.boundary.plot(ax=ax, linewidth = 0.5)
 
         #Data plot
-        title = f'{column} overlayed on Counties' if kwargs.get('title') is None else kwargs.get('title')
+
         # annotate county with string values
         if m_d[column].dtype == 'O':
+
             m_d['coords'] = m_d['geometry'].apply(lambda x:x.representative_point().coords[:])
             m_d['coords'] = [coords[0] for coords in m_d['coords']]
             for idx, row in m_d.iterrows():
