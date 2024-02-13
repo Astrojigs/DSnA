@@ -334,3 +334,48 @@ class Graph:
             w, h = bar.get_width(), bar.get_height()
             ax.imshow(grad, extent=[x+w, x, y, y+h], aspect='auto', zorder=1)
         ax.axis(lim)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+"""
+Good afternoon,
+ 
+ 
+My colleague passed on your contact details for your visa application. 
+                                                                                                                                             
+If you haven’t done so please kindly complete and email the following documents to myself please, labelled and in separate PDF attachments at your earliest convenience.
+ 
+1. Passport (main page and signature page)
+2. VISA page, Dublin airport green stamp, Stamp from INIS – in one PDF document.
+3. Photo (passport size) – in JPEG Resolution 240 dpi - width size min 413 length min 531 
+4. ATWS letter 
+5. Contract 
+6. IRP card (both sides) – if you don’t have IRP card yet, we can start the application without it.
+7. Details of Foreign National Form (attached) 
+
+*Please ensure your photograph is jpeg and meets the criteria outlined as above, EPMS will not accept anything other than what is outlined*
+ 
+ 
+Please be advised that there are a high volume of applicants to process so there are currently delays. 
+"""
