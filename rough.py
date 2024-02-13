@@ -359,23 +359,58 @@ class Graph:
 
 
 """
-Good afternoon,
- 
- 
-My colleague passed on your contact details for your visa application. 
-                                                                                                                                             
-If you haven’t done so please kindly complete and email the following documents to myself please, labelled and in separate PDF attachments at your earliest convenience.
- 
-1. Passport (main page and signature page)
-2. VISA page, Dublin airport green stamp, Stamp from INIS – in one PDF document.
-3. Photo (passport size) – in JPEG Resolution 240 dpi - width size min 413 length min 531 
-4. ATWS letter 
-5. Contract 
-6. IRP card (both sides) – if you don’t have IRP card yet, we can start the application without it.
-7. Details of Foreign National Form (attached) 
-
-*Please ensure your photograph is jpeg and meets the criteria outlined as above, EPMS will not accept anything other than what is outlined*
- 
- 
-Please be advised that there are a high volume of applicants to process so there are currently delays. 
+<class 'pandas.core.frame.DataFrame'>
+RangeIndex: 3169 entries, 0 to 3168
+Data columns (total 47 columns):
+ #   Column                          Non-Null Count  Dtype         
+---  ------                          --------------  -----         
+ 0   Med. Record No.                 3169 non-null   int64         
+ 1   Surname                         3169 non-null   object        
+ 2   First Name                      3169 non-null   object        
+ 3   Date of Birth                   3169 non-null   datetime64[ns]
+ 4   Sex                             3169 non-null   object        
+ 5   Previous entry registry BENIGN  335 non-null    float64       
+ 6   Benign surgery date             3169 non-null   datetime64[ns]
+ 7   Age at surgery                  3169 non-null   int64         
+ 8   Surgery performed               3169 non-null   object        
+ 9   Surgery location                3168 non-null   object        
+ 10  Patient Source                  2886 non-null   object        
+ 11  Waiting list form completed     2866 non-null   object        
+ 12  Date operation requested        1980 non-null   datetime64[ns]
+ 13  Date of first operation         3160 non-null   datetime64[ns]
+ 14  Number of days waiting for      1980 non-null   float64       
+ 15  Pre operative procedures        1135 non-null   object        
+ 16  Localisation technique          17 non-null     object        
+ 17  Consultant surgeon              3166 non-null   object        
+ 18  Other consultant surgeon        51 non-null     object        
+ 19  Operation breast side           3165 non-null   object        
+ 20  Breast procedure type           2876 non-null   object        
+ 21  Other breast procedure typ      342 non-null    object        
+ 22  Reconstruction                  3090 non-null   object        
+ 23  Reconstruction type             410 non-null    object        
+ 24  Other reconstruction type       180 non-null    object        
+ 25  Date admitted for surgery       3092 non-null   datetime64[ns]
+ 26  Date discharged post surge      3089 non-null   datetime64[ns]
+ 27  Length of stay for surgery      3089 non-null   object        
+ 28  Operation comments              149 non-null    object        
+ 29  MDM meeting date                2343 non-null   datetime64[ns]
+ 30  MDM meeting comments            2348 non-null   object        
+ 31  Side                            1104 non-null   object        
+ 32  Benign diagnosis - RIGHT        491 non-null    object        
+ 33  Other benign - right side       297 non-null    object        
+ 34  Atypia - RIGHT SIDE             9 non-null      object        
+ 35  LCIS - RIGHT SIDE               115 non-null    object        
+ 36  Calcification - RIGHT SIDE      114 non-null    object        
+ 37  Pathology comments - RIG        27 non-null     object        
+ 38  Benign diagnosis - LEFT SI      465 non-null    object        
+ 39  Other benign - left side        294 non-null    object        
+ 40  Atypia - LEFT SIDE              5 non-null      object        
+ 41  LCIS - LEFT SIDE                88 non-null     object        
+ 42  Calcification - LEFT SIDE       88 non-null     object        
+ 43  Pathology comments - LEF        12 non-null     object        
+ 44  Benign diagnosis                1601 non-null   object        
+ 45  Other benign diagnosis          766 non-null    object        
+ 46  Subsequent entry                368 non-null    object        
+dtypes: datetime64[ns](7), float64(2), int64(2), object(36)
+memory usage: 1.1+ MB 
 """
