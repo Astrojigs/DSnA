@@ -93,6 +93,21 @@ def check_similarity(a,b):
     """
     return round(SequenceMatcher(None, a, b).ratio(),2)
 
+def value_counts(series :'df[column]', dropna=True, is_string=True):
+    """
+    Returns : Key and values
+
+    Parameters:
+        is_string : confirms if column type is string
+    output form:
+        k, v = utils.value_counts(series = df[column])
+
+    """
+
+    k, v = series.value_counts(dropna=dropna).keys(), series.value_counts(dropna=dropna).values
+    k = ['No Value' if type(i) != str else i for i in k]
+
+    return k, v
 
 class Graph:
     """
@@ -114,13 +129,41 @@ class Graph:
 
     def __init__(self,**kwargs):
         self.df = kwargs.get('df')
-
-    def plot_pie(self):
-        pass
+        self.county_df = gpd.read_file('./Utilities/counties.shp')
 
 
 
-    def plot_on_county(self, df,  county_column, column, operation, ax = plt.gca(), log_scale= False, **kwargs):
+    def plot_pie(self, column, df, explode = [], ax=None, dropna=True, upto_index=None,**kwargs):
+        """
+        Plots an aesthetic pie plot
+
+        Parameters:
+            column : (str) Column name you'd like to plot
+            df : the dataframe
+            explode : (list) Separates different part of pie
+            ax = default is plt.gca()
+            dropna = drop null values? if yes, then True
+
+            upto_index : Specify end index value (exlcudes value at that index)
+        """
+        k, v = df[column].value_counts(dropna=dropna).keys(), df[column].value_counts(dropna=dropna).values
+
+        if upto_index is not None:
+            k = k[:upto_index]
+            v = v[:upto_index]
+        if explode == []:
+            explode = [0 for i in range(len(v))]
+
+        if ax is None:
+            ax = plt.gca()
+
+        ax.pie(v, labels=k,
+                explode = explode,
+                autopct = '%1.1f%%', **kwargs)
+
+
+
+    def county_plot(self, df,  county_column, column, operation, ax = plt.gca(), log_scale= False, **kwargs):
         """
         Plots given data on map.
 
@@ -155,7 +198,6 @@ class Graph:
                             https://matplotlib.org/stable/users/explain/colors/colormaps.html
 
         """
-        county_df = gpd.read_file('./Utilities/counties.shp')
 
         # Copying the dataframe just to be sfe.
         dummy = df
@@ -178,7 +220,8 @@ class Graph:
                 dummy[column] = dummy[column].apply(lambda x : x.any() if type(x) != str else x) # only accounts for list if not a string
             else:
                 # Finds average number for each county
-                title = 'Average ' + title
+                if kwargs.get('title') is None:
+                    title = 'Average ' + title
                 dummy = round(dummy.groupby(county_column,dropna = True)[column].mean(),2).to_frame().reset_index()
 
         elif operation == 'sum' or operation == 'total':
@@ -191,11 +234,11 @@ class Graph:
             dummy[column] = dummy['c']
         # Merge based on county
         dummy['County'] = dummy[county_column]
-        m_d = pd.merge(county_df, dummy, on='County')
+        m_d = pd.merge(self.county_df, dummy, on='County')
 
         # Plotting the data
         #Boundary plot
-        county_df.boundary.plot(ax=ax, linewidth = 0.5)
+        self.county_df.boundary.plot(ax=ax, linewidth = 0.5)
 
         #Data plot
 
@@ -228,189 +271,59 @@ class Graph:
         # Don't plot axis
         ax.set_axis_off()
 
+        ax.set_facecolor((0.5,0.5,0.8,1))
+
         ax.set_title(title)
 
-    def plot_horizontal_bar(self, categorical_column, **kwargs):
+    def county_names(self, ax=None, **kwargs):
         """
-        Plots horizontal barplots for a categorical column
+        Plots the boundary of Ireland and county names:
+
         **kwargs:
-            df : Pandas DataFrame
-            ax or axis :
-            fig or figure : figure object
-            title : title of the plot
-            title_size : default = 18
-            subtitle :
-            xlabel or x_label
-            figsize :
-
+            fontsize
+            color
+            boundary : (default is True) (plots boundary of counties)
         """
+        if ax is None:
+            ax = plt.gca()
 
-        ax = kwargs.get('ax' and 'axis') if kwargs.get('ax' and 'axis') is not None else plt.gca()
-        fig = kwargs.get('fig' and 'figure') if kwargs.get('fig' and 'figure') is not None else plt.gcf()
-        w,h = kwargs.get('figsize') if kwargs.get('figsize') is not None else (10,7)
-        ax.figure.set_size_inches(w,h)
-        self.df = kwargs.get('df')
+        boundary = True if kwargs.get('boundary') is None else kwargs.get('boundary')
 
-        ## Change this for different cmaps
-        mpl.pyplot.viridis()
+        if boundary is True:
+            self.county_df.boundary.plot(ax=ax, linewidth = 0.2, color='black')
 
-        plot_title = kwargs.get('title') if kwargs.get('title') is not None else categorical_column + ' Counts'
+        self.county_df['coords'] = self.county_df['geometry'].apply(lambda x:x.representative_point().coords[:])
+        self.county_df['coords'] = [coords[0] for coords in self.county_df['coords']]
+        for idx, row in self.county_df.iterrows():
+            ax.text(row.coords[0], row.coords[1], s = row['County'],
+            horizontalalignment='center',
+            bbox = {'facecolor' : 'none',
+            'alpha' : 0.9,
+            'pad': 2,
+            'edgecolor':'none'},
+            fontsize = kwargs.get('s') if kwargs.get('s') is not None else 7,
+            color=kwargs.get('color') if kwargs.get('color') is not None else 'white',
+            weight = 'bold')
 
-        if self.df is None:
-            raise ValueError('No DataFrame found. Set Parameter df = datframe.')
-
-        # Value counts
-        vc = self.df[categorical_column].value_counts(dropna=True)
-        index = vc.keys()
-        values = vc.values
-
-        title_size = kwargs.get('title_size') if kwargs.get('title_size') is not None else 18
-
-        bars = ax.barh(index, values)
-
-        # plt.tight_layout()
-        ax.xaxis.set_major_formatter(mpl.ticker.StrMethodFormatter('{x:,.0f}'))
-
-        title = ax.set_title(plot_title, pad=20, fontsize=title_size)
-        title.set_position([.33, 1])
-
-        # plt.subplots_adjust(top=0.9, bottom=0.1)
-
-        ax.grid(zorder=0)
-
-        self.gradientbars(bars)
-
-        rects = ax.patches
-
-        # Place a label each bar
-        for rect in rects:
-            # Get X and Y placement of label from rect
-            x_value = rect.get_width()
-            y_value = rect.get_y() + rect.get_height() / 2
-
-            # Number of points between bar and label; change to your liking
-            space = 10
-            # Vertical alignment for positive values
-            ha = 'left'
-
-            # If value of bar is negative: place label to the left of the bar
-            if x_value < 0:
-                # Invert space to place label to the left
-                space *= -1
-                # Horizontally align label to the right
-                ha = 'right'
-
-            # Use X value as label and format number
-            label = '{:,.0f}'.format(x_value)
-
-            # Create annotation
-            plt.annotate(
-                label,                      # Use `label` as label
-                (x_value, y_value),         # Place label at bar end
-                xytext=(space, 0),          # Horizontally shift label by `space`
-                textcoords='offset points', # Interpret `xytext` as offset in points
-                va='center',                # Vertically center label
-                ha=ha,                      # Horizontally align label differently for positive and negative values
-            color = 'red')            # Change label color to white
-
-
-        x_label = kwargs.get('xlabel' and 'x_label') if kwargs.get('xlabel' and 'x_label') is not None else 'Counts'
-        #Set x-label
-        ax.set_xlabel(x_label, color='#525252')
-        ax.set_xlim(values.min(), values.max()+10)
-
-    def gradientbars(self, bars):
+    def erase_frame(self, ax=None, **kwargs):
         """
-        Used exclusively in plot_horizontal_bar
-
+        Erases the borders of a given axis
         """
-        grad = np.atleast_2d(np.linspace(0,1,256))
-        ax = bars[0].axes
-        lim = ax.get_xlim()+ax.get_ylim()
-        for bar in bars:
-            bar.set_zorder(1)
-            bar.set_facecolor('none')
-            x, y = bar.get_xy()
-            w, h = bar.get_width(), bar.get_height()
-            ax.imshow(grad, extent=[x+w, x, y, y+h], aspect='auto', zorder=1)
-        ax.axis(lim)
+        if ax is None:
+            ax = plt.gca()
+        ax.spines['top'].set_visible(False)
+        ax.spines['right'].set_visible(False)
+        ax.spines['bottom'].set_visible(False)
+        ax.spines['left'].set_visible(False)
 
+    def xaxis_off(self, ax=None):
+        """
+        Makes the x axis label disappear.
+        """
+        ax.xaxis.set_visible(False)
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-"""
-<class 'pandas.core.frame.DataFrame'>
-RangeIndex: 3169 entries, 0 to 3168
-Data columns (total 47 columns):
- #   Column                          Non-Null Count  Dtype         
----  ------                          --------------  -----         
- 0   Med. Record No.                 3169 non-null   int64         
- 1   Surname                         3169 non-null   object        
- 2   First Name                      3169 non-null   object        
- 3   Date of Birth                   3169 non-null   datetime64[ns]
- 4   Sex                             3169 non-null   object        
- 5   Previous entry registry BENIGN  335 non-null    float64       
- 6   Benign surgery date             3169 non-null   datetime64[ns]
- 7   Age at surgery                  3169 non-null   int64         
- 8   Surgery performed               3169 non-null   object        
- 9   Surgery location                3168 non-null   object        
- 10  Patient Source                  2886 non-null   object        
- 11  Waiting list form completed     2866 non-null   object        
- 12  Date operation requested        1980 non-null   datetime64[ns]
- 13  Date of first operation         3160 non-null   datetime64[ns]
- 14  Number of days waiting for      1980 non-null   float64       
- 15  Pre operative procedures        1135 non-null   object        
- 16  Localisation technique          17 non-null     object        
- 17  Consultant surgeon              3166 non-null   object        
- 18  Other consultant surgeon        51 non-null     object        
- 19  Operation breast side           3165 non-null   object        
- 20  Breast procedure type           2876 non-null   object        
- 21  Other breast procedure typ      342 non-null    object        
- 22  Reconstruction                  3090 non-null   object        
- 23  Reconstruction type             410 non-null    object        
- 24  Other reconstruction type       180 non-null    object        
- 25  Date admitted for surgery       3092 non-null   datetime64[ns]
- 26  Date discharged post surge      3089 non-null   datetime64[ns]
- 27  Length of stay for surgery      3089 non-null   object        
- 28  Operation comments              149 non-null    object        
- 29  MDM meeting date                2343 non-null   datetime64[ns]
- 30  MDM meeting comments            2348 non-null   object        
- 31  Side                            1104 non-null   object        
- 32  Benign diagnosis - RIGHT        491 non-null    object        
- 33  Other benign - right side       297 non-null    object        
- 34  Atypia - RIGHT SIDE             9 non-null      object        
- 35  LCIS - RIGHT SIDE               115 non-null    object        
- 36  Calcification - RIGHT SIDE      114 non-null    object        
- 37  Pathology comments - RIG        27 non-null     object        
- 38  Benign diagnosis - LEFT SI      465 non-null    object        
- 39  Other benign - left side        294 non-null    object        
- 40  Atypia - LEFT SIDE              5 non-null      object        
- 41  LCIS - LEFT SIDE                88 non-null     object        
- 42  Calcification - LEFT SIDE       88 non-null     object        
- 43  Pathology comments - LEF        12 non-null     object        
- 44  Benign diagnosis                1601 non-null   object        
- 45  Other benign diagnosis          766 non-null    object        
- 46  Subsequent entry                368 non-null    object        
-dtypes: datetime64[ns](7), float64(2), int64(2), object(36)
-memory usage: 1.1+ MB 
-"""
+    def yaxis_off(self, ax=None):
+        """
+        Makes the y axis label disappear.
+        """
+        ax.yaxis.set_visible(False)
