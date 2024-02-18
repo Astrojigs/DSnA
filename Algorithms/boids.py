@@ -1,3 +1,6 @@
+import numpy as np
+
+
 ''' Imitates a flock of birds behaviour'''
 
 class Bird:
@@ -16,35 +19,80 @@ class Bird:
         vy : velocity_y
         radius : radius of visibility (default = 5)
         """
-        self.name = None
+        self.id = None
         self.x = x
         self.y = y
 
-        # I AM SPEEEED
-        self.vx = kwargs.get(vx)
-        self.vy = kwargs.get(vy)
+        self.vx = kwargs.get('vx',None)
+        self.vy = kwargs.get('vy', None)
 
+        self.ax = kwargs.get('ax', None)
+        self.ay = kwargs.get('ay', None)
+
+        self.family = []
         # visibility radius of bird
         self.radius = 5 # units
 
         # Is the bird in sky?
         self.in_sky = False # default = False
 
+
+        if self.in_sky is True:
+            self.avoid_nearby()
         # Let the bird look around the surroundings and
-        self.look_around() # returns a list of bird objects which are less than 5 units of distance
+
+        self.avoid_nearby() # returns a list of bird objects which are less than 5 units of distance
 
 
-    def look_around(self):
+    def avoid_nearby(self):
         '''
-        Looks around the circle with
+        Identifies bird objects within a radius (self.radius)
+
+        Note: No birds to be added while using this functions
         '''
         pass
 
+class Rectangle:
+    def __init__(self,x,y,w,h):
+        """
+        x = center of the Rectangle
+        y = center of the Rectangle
+        w = width of the rectangle
+        h = height of the rectangle
+        """
+        self.x = x
+        self.y = y
+        self.w = w
+        self.h = h
+        self.west_edge, self.east_edge = x - w/2, x + w/2
+        self.north_edge, self.south_edge = y + h/2, y - h/2
+
+    def contains(self,point):
+        return (point.x >= self.west_edge and point.x <= self.east_edge and
+        point.y <= self.north_edge and point.y >= self.south_edge)
+
+
 class Sky:
+    """
+    Creates an object where birds can exist.
+
+    Parameters
+    """
     def __init__(self, **kwargs):
         self.birds = [] # number of birds
-        self.width = 0
-        self.height = 0
+        self.width = 100
+        self.height = 100
+
+        self.links = {}
+
+    def create_grid(self, unit_length=1):
+        """
+        Creates Rectangle objects for each grid block.
+        """
+        blocks = []
+        for i in np.arange(0,self.width + unit_length, unit_length):
+            for j in np.arange(0,self.height + unit_length, unit_length):
+                print(i,j)
 
     def insert(self, bird, **kwargs):
         """
@@ -57,22 +105,44 @@ class Sky:
         **kwargs
         ----------
         """
-        # change bird name to unique name
-        if len(self.birds) != 0:
-            if self.birds[-1].name is not None: # check if first bird name is not None.
-                bird.name = self.birds[-1][:-1] + str(int(self.birds[-1][-1]) + 1) # change from 'sparrow_1' to 'sparrow_2'
-            else: # set default name for first bird:
-                self.birds[-1].name = 'sparrow_1'
+        if bird.id is None:
+            # meaning, first bird
+            bird.id = 1
+        else:
+            bird.id += 1
+
         # Let bird know he is in sky
         if bird.in_sky is False:
             bird.in_sky = True
             # Add bird to sky list
             self.birds.append(bird)
-
-
         else:
-            print(f'Bird : {bird.name} already in Sky -_-')
+            print(f'Bird : {bird.id} already in Sky -_-')
+            return
 
-    def set_bounds(self, x, y):
-        self.width = x
-        self.height = y
+        # Update links:
+        self.links[bird.id] = None
+
+class TimeLoaf:
+    def __init__(self, n_frames = 30,**kwargs):
+        """
+        Creates a Time Loaf consisting of all time slices.
+
+        Parameters
+        ----------
+        n_frames :
+        """
+
+        self.n_frames = n_frames
+
+    def load(self, sky = None, n_frames = self.n_frames):
+        pass
+
+    def check_rules(self,):
+        """
+        Returns the x1,y1, vx1,vy1, ax1,ay1 after checking rules
+        """
+        # Separation
+
+        # Steer towards the average heading of the flock
+        # Steer towards the average center of mass.
