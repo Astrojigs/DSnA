@@ -1,3 +1,165 @@
+"""
+Patient Id
+Entry Id
+Hospital Number
+Surname
+Forename
+% predicted FEV1
+% predicted FVC
+% predicted KCO
+% predicted TLCO-SB
+Adeno-Description
+Admission to operation time
+Age
+Air leak &gt;7 days-Description
+Alcohol excess-Description
+Anticoagulation-Description
+Any complications-Description
+ASA grade-Description
+Atypical carcinoid-Description
+BMI
+Broncheoalveolar-Description
+Bronchoscopy-Description
+BSA
+Cardiac failure-Description
+Cause of Death
+Centre-Description
+Centre Name
+Chest Wall /Diaphragmatic Procedures-Description
+Cigarettes per day
+Consultant Surgeon-Description
+COPD-Description
+Creatinine
+CT-Description
+CT-guided biopsy-Description
+Date And Time Of Admission
+Date And Time Of Discharge From Thoracic Surgery Service
+Date And Time Of Surgery
+Date of Admission
+Date Of Birth
+Date of discharge / death
+Date of discharge from ITU
+Date Of Discharge From Thoracic Surgery Team
+Date of first assessment
+Date of re-admission to ITU
+Date of surgery
+Date of surgical referral
+Description of other method of tissue diagnosis
+Details of other histological diagnosis / further information
+Details of other named operations
+Details of other organs / systems
+Diffusion capacity
+Dyspnoea score-Description
+EBUS-Description
+Endoscopic Procedures  (Not VATS)-Description
+First Assistant
+First Operator
+Gender-Description
+GMC number
+Grade Of surgical Complication-Description
+Haemoglobin
+Height
+Height (feet)
+Height (inches)
+Hyperlipidaemia-Description
+Hypertension-Description
+If Offsite, Please Specify Site-Description
+If Other Non Cancer Indicaton, Please Specify
+If Other Pleural Procedure, Please Specify
+If Other Procedure Performed, Please Specify
+If Other Procedure, Please Specify
+If Other Surgical Approach, Please Specify
+Indication For Surgery-Description
+Indication For Surgery - Cancer-Description
+Indication For Surgery - Non Cancer-Description
+Indication For Surgery - Pleural Disease-Description
+Infection-Description
+Insulin dependent diabetes-Description
+IPPV-Description
+Ischaemic heart disease-Description
+Large cell-Description
+Length of post surgical stay (days)
+Length of post surgical stay thoracic team (days)
+Lung Resections - All Other Pathologies-Description
+Lung Resections - Primary Malignant-Description
+MATERTHORACICLOCKED-Description
+Measured FEV1
+Measured FVC
+Mediastinal node strategy-Description
+Mediastinal Procedures-Description
+Mesothelioma Surgery (Therapeutic)-Description
+MRI-Description
+Name of Trainee
+Named operation
+Named Operation (Primary Procedure)-Description
+NSCLC-Description
+Number of functional segments removed
+Operation Centre-Description
+Operative priority-Description
+Other / further information-Description
+Other method of tissue diagnosis-Description
+Other Operation(LOCAL)
+Other Procedures-Description
+Other Procedures (Local)-Description
+Pack years
+Pathological category
+Patient status at discharge-Description
+Performance status (ECOG)-Description
+Peripheral vascular disease-Description
+PET-Description
+Pleural Procedures-Description
+Post-op % predicted FEV1
+Post-op % predicted KCO
+Post-op predicted FEV1
+Post-op predicted KCO
+Post-operative M stage-Description
+Post-operative N stage-Description
+Post-operative T stage-Description
+Pre-operative chemotherapy-Description
+Pre-operative M stage-Description
+Pre-operative N stage-Description
+Pre-operative radiotherapy-Description
+Pre-operative T stage-Description
+Pre-operative tissue diagnosis made-Description
+Previous history of cancer-Description
+Previous stroke-Description
+Primary organ / system targeted
+Procedure type
+Readmission within 30 Days-Description
+Record owner
+Referral to operation time
+Referring Hospital-Description
+Referring Physician-Description
+Resection for primary lung cancer-Description
+Return to theatre in the same admission-Description
+Second Assistant
+Small cell-Description
+Smoking history-Description
+Squamous-Description
+Steroid therapy-Description
+Surgical Approach - Incision Type
+Surgical resection performed
+Surgical strategy
+Theraputic Broncoscopy Type
+Thoracoscore
+Time of Admission
+Time of Surgery
+Total number of functional pulmonary segments
+Tracheal Surgery (Includes Carinal Resection)-Description
+Trainee led procedure-Description
+Type of lung cancer-Description
+Type Of Other Procedure Performed-Description
+Type Of Other Procedure Performed (Multi Choice)
+Typical carcinoid-Description
+Undifferentiated-Description
+Urea
+Weight
+Weight (lbs)
+Weight (stone)
+Years smoked
+Count
+"""
+
 import matplotlib.pyplot as plt
 import matplotlib as mpl
 import numpy as np
