@@ -1,4 +1,4 @@
-class Node:
+class ListNode:
     def __init__(self, data=None):
         self.data = data
         self.next = None
@@ -16,11 +16,11 @@ class LinkedList:
     """
 
     def __init__(self):
-        self.head = Node()
+        self.head = ListNode()
 
     def append(self, data):
         # Creating a new node with the data
-        new_node = Node(data)
+        new_node = ListNode(data)
 
         cur = self.head
         while cur.next is not None:
@@ -59,6 +59,7 @@ class LinkedList:
             cur_node = cur_node.next
             elements.append(cur_node.data)
         return f'{elements}, <LinkedList obj>'
+
     def __len__(self):
         elements = []
         cur_node = self.head
@@ -66,3 +67,20 @@ class LinkedList:
             cur_node = cur_node.next
             elements.append(cur_node.data)
         return len(elements)
+
+
+class TreeNode():
+    def __init__(self, data=None, children=None):
+
+        if children is None:
+            children = []
+
+        self.data = data
+        self.children = children
+
+
+class Tree():
+    """Create a Tree Data Structure """
+
+    def __init__(self):
+        self.root = TreeNode()
