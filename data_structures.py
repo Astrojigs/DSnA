@@ -7,6 +7,12 @@ class Node:
 class LinkedList:
     """
     Create a Linked List.
+
+    methods:
+        append:
+            add an element at the end of the list.
+        length:
+            returns the length of the list
     """
 
     def __init__(self):
@@ -38,4 +44,25 @@ class LinkedList:
             elements.append(cur_node.data)
         print(elements)
 
-if __name__ == '__main__':
+    def __repr__(self):
+        elements = []
+        cur_node = self.head
+        while cur_node.next is not None:
+            cur_node = cur_node.next
+            elements.append(cur_node.data)
+        return elements
+
+    def __str__(self):
+        elements = []
+        cur_node = self.head
+        while cur_node.next is not None:
+            cur_node = cur_node.next
+            elements.append(cur_node.data)
+        return f'{elements}, <LinkedList obj>'
+    def __len__(self):
+        elements = []
+        cur_node = self.head
+        while cur_node.next is not None:
+            cur_node = cur_node.next
+            elements.append(cur_node.data)
+        return len(elements)
