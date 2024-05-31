@@ -78,9 +78,36 @@ class TreeNode():
         self.data = data
         self.children = children
 
+    def add_child(self, child : 'TreeNode'):
+        """
+        Add a Child to the list of children.
+
+        Parameters:
+            child : (TreeNode obj)
+
+        Appends the list with the new child.
+        """
+        if isinstance(child, TreeNode):
+            self.children.append(child)
+        else:
+            raise TypeError('child must be an instance of TreeNode')
+
+    def remove_child(self, child):
+        """
+        Removes given child from the list.
+        """
+        if child in self.children:
+            self.children.remove(child)
+        else:
+            return f'The specified child is not a direct child of this node.'
+
+
+
+
 
 class Tree():
     """Create a Tree Data Structure """
 
     def __init__(self):
         self.root = TreeNode()
+
