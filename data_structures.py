@@ -111,3 +111,9 @@ class Tree():
     def __init__(self):
         self.root = TreeNode()
 
+    def __repr__(self):
+        """
+        Prints a representation of the tree.
+
+        """
+
