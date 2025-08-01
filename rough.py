@@ -1,4 +1,4 @@
-import data_structures as ds
+from ds import basic as ds
 
 l = ds.LinkedList()
 
